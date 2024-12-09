@@ -45,3 +45,37 @@ Voici les différents types de branches et leur rôle :
   git checkout -b release/v1.0 develop
   ```
 
+---
+
+## **Processus complet :**
+1. **Créer une fonctionnalité :**
+   - Créer une branche `feature/<nom>` et développer.
+   - Pousser les commits avec convention Gitmoji (ex. ✨ pour une nouvelle fonctionnalité).
+   - Créer une PR vers `develop` avec revue de code.
+
+2. **Corriger un bug critique :**
+   - Créer une branche `hotfix/<nom>` depuis `main`.
+   - Appliquer la correction et tester.
+   - Fusionner dans `main` et `develop`.
+
+3. **Préparer une release :**
+   - Créer une branche `release/<version>` depuis `develop`.
+   - Tester, ajuster, puis fusionner dans `main` (avec un tag de version) et `develop`.
+
+---
+
+## **Gestion des Rollbacks :**
+- **Annuler un commit (recommandé)** :  
+  ```bash
+  git revert <SHA>
+  ```
+- **Revenir à un état précédent (précaution)** :  
+  ```bash
+  git reset --hard <SHA>
+  git push --force
+  ```
+- **Restaurer un fichier spécifique** :  
+  ```bash
+  git checkout <SHA> -- <fichier>
+  ```
+
