@@ -1,13 +1,9 @@
-FROM node:latest AS build
+FROM node:23
 WORKDIR /app
-COPY package*.json ./
-RUN npm install --legacy-peer-deps
+COPY package.json yarn.lock ./
+RUN yarn install
 COPY . .
-RUN npm run build
-
-FROM nginx:latest
-WORKDIR /usr/share/nginx/html
-COPY --from=build /app/build ./
-EXPOSE 80
-USER nginx
-CMD ["nginx", "-g", "daemon off;"]
+ENV VOTE_API_BASE_URL=http://localhost:8080
+RUN yarn build
+EXPOSE 3000
+CMD ["yarn", "start"]
