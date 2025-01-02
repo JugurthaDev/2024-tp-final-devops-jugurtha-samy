@@ -57,11 +57,13 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v2
 
-      - name: 📦 Set up Node.js for Web-Client
-        uses: actions/setup-node@v3
-        with:
-          node-version: 23
-          cache: 'yarn'
+      - name: 📦 Install Node.js 23
+        run: |
+          curl -sL https://deb.nodesource.com/setup_23.x | sudo -E bash -
+          sudo apt-get install -y nodejs
+
+      - name: 📦 Verify Node.js version
+        run: node --version
 
       - name: 📦 Cache Yarn dependencies for Web-Client
         uses: actions/cache@v2
