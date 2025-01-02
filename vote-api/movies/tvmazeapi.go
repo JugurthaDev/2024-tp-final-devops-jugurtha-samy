@@ -1,10 +1,12 @@
 package movies
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 var TvMazeApiBaseUrl = "https://api.tvmaze.com"
@@ -65,6 +67,19 @@ type TvMazeMovieDto struct {
 }
 
 func GetMovieByImdbId(imdbId string) (Movie, error) {
+	// Créer un transport HTTP avec la configuration de sécurité SSL désactivée
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: true, // Ignorer la vérification SSL
+		},
+	}
+
+	// Créer un client HTTP avec ce transport personnalisé
+	client := &http.Client{
+		Transport: tr,
+		Timeout:   10 * time.Second, // Timeout optionnel pour éviter les appels bloqués indéfiniment
+	}
+
 	baseUrlString, err := url.JoinPath(TvMazeApiBaseUrl, TvMazeShowsByIdUri)
 	if err != nil {
 		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
@@ -78,7 +93,8 @@ func GetMovieByImdbId(imdbId string) (Movie, error) {
 	query.Set("imdb", imdbId)
 	baseUrl.RawQuery = query.Encode()
 
-	response, err := http.Get(baseUrl.String())
+	// Utiliser le client HTTP avec transport personnalisé pour envoyer la requête
+	response, err := client.Get(baseUrl.String())
 	if err != nil {
 		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
