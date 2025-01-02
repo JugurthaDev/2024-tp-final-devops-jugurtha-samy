@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  # Vote-API
+  vote-api:
+    build:
+      context: .
+    environment:
+      - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    networks:
+      - vote-network
+
+  # PostgreSQL
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: vote_api
+      POSTGRES_PASSWORD: api123
+      POSTGRES_DB: vote_api
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - vote-network
+
+networks:
+  vote-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
