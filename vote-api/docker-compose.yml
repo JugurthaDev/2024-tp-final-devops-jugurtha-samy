@@ -6,7 +6,7 @@ services:
     build:
       context: .
     environment:
-      - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api
+      - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
       - "8080:8080"
     depends_on:
