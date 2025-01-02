@@ -1,0 +1,84 @@
+name: 🛠️ CI Workflow for Vote-API and Web-Client on develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  vote-api-tests:
+    name: 🚀 Vote-API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🐳 Start PostgreSQL for Vote-API Integration Tests
+        run: |
+          docker run -d \
+            --name postgres \
+            -e POSTGRES_USER=${{ secrets.POSTGRES_USER }} \
+            -e POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} \
+            -e POSTGRES_DB=${{ secrets.POSTGRES_DB }} \
+            postgres:15
+          sleep 10
+
+      - name: 🐳 Build Vote-API Image
+        run: docker build -t vote-api ./vote-api
+
+      - name: ✅ Run Integration Tests for Vote-API
+        run: |
+          docker run --rm \
+            --env PG_URL=${{ secrets.PG_URL }} \
+            --network host \
+            vote-api go test ./... -v
+
+      - name: ✨ Run Linter for Vote-API
+        run: |
+          docker run --rm \
+            vote-api golangci-lint run --timeout 5m
+
+      - name: ✅ Check Formatting for Vote-API
+        run: |
+          docker run --rm \
+            vote-api go fmt ./...
+
+      - name: 🛑 Clean Up PostgreSQL for Vote-API
+        if: always()
+        run: docker stop postgres && docker rm postgres
+
+  web-client-tests:
+    name: 🌐 Web-Client Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: 📦 Set up Node.js for Web-Client
+        uses: actions/setup-node@v3
+        with:
+          node-version: 23
+          cache: 'yarn'
+
+      - name: 📦 Install dependencies for Web-Client
+        run: yarn
+        working-directory: ./web-client
+
+      - name: ✅ Run Unit Tests for Web-Client
+        run: yarn test
+        working-directory: ./web-client
+
+      - name: 🌐 Run E2E Tests for Web-Client
+        run: yarn e2e
+        working-directory: ./web-client
+
+      - name: ✨ Run Linter for Web-Client
+        run: yarn lint
+        working-directory: ./web-client
+
+      - name: ✅ Check Formatting for Web-Client
+        run: yarn format:check
+        working-directory: ./web-client
