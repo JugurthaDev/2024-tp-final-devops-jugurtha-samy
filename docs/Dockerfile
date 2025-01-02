@@ -15,6 +15,6 @@ WORKDIR /home/static
 
 COPY --from=build /usr/src/app/build/ ./
 
-EXPOSE 3000
+EXPOSE 2000
 
-CMD ["busybox", "httpd", "-f", "-v", "-p", "3000"]
+CMD ["busybox", "httpd", "-f", "-v", "-p", "2000"]
