@@ -63,6 +63,14 @@ jobs:
           node-version: 23
           cache: 'yarn'
 
+      - name: 📦 Cache Yarn dependencies for Web-Client
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('web-client/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: 📦 Install dependencies for Web-Client
         run: yarn
         working-directory: ./web-client
