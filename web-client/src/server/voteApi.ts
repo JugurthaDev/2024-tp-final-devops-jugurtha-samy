@@ -3,14 +3,14 @@ import { Vote } from "@/core/vote";
 
 type HTTPMethod = "GET" | "POST";
 
-const voteApiBaseUrl = process.env.VOTE_API_BASE_URL ?? "http://localhost:8080";
+const voteApiBaseUrl = "http://localhost:8080";
 
 function callVoteApi<ExpectedResponse, Body = unknown>(
   method: HTTPMethod,
   uri: string,
   body?: Body,
 ): Promise<ExpectedResponse> {
-  return fetch(`http://localhost:8080/${uri}`, {
+  return fetch(`${voteApiBaseUrl}/${uri}`, {
     method,
     headers: {
       ...(body
