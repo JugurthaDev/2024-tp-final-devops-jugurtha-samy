@@ -5,7 +5,6 @@ services:
   vote-api:
     build:
       context: ./vote-api 
-    container_name: vote-api-container
     environment:
       - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
@@ -33,7 +32,6 @@ services:
   web-client:
     build:
       context: ./web-client
-    container_name: web-client-container
     environment:
       - VOTE_API_BASE_URL=http://vote-api:8080
     ports:
@@ -48,7 +46,6 @@ services:
     build:
       context: ./docs 
       dockerfile: Dockerfile
-    container_name: docs-container
     ports:
       - "2000:2000"
     networks:
