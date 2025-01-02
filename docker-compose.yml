@@ -35,7 +35,7 @@ services:
     environment:
       - VOTE_API_BASE_URL=http://vote-api:8080
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - vote-api
     networks:
