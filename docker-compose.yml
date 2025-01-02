@@ -5,6 +5,7 @@ services:
   vote-api:
     build:
       context: ./vote-api 
+    image: vote-api:latest
     environment:
       - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
@@ -12,7 +13,7 @@ services:
     depends_on:
       - postgres
     networks:
-      - vote-network
+      - network
 
   # PostgreSQL
   postgres:
@@ -26,12 +27,13 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     networks:
-      - vote-network
+      - network
 
   # Node.js Application
-  node-app:
+  web-client:
     build:
       context: ./web-client
+    image: web-client:latest
     environment:
       - VOTE_API_BASE_URL=http://vote-api:8080
     ports:
@@ -39,20 +41,21 @@ services:
     depends_on:
       - vote-api
     networks:
-      - vote-network
+      - network
   
   # docs-app
   docs-app:
     build:
       context: ./docs 
       dockerfile: Dockerfile
+    image: docs-app:latest
     ports:
       - "2000:2000"
     networks:
-      - vote-network
+      - network
 
 networks:
-  vote-network:
+  network:
     driver: bridge
 
 volumes:
