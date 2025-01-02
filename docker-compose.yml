@@ -28,14 +28,14 @@ services:
     networks:
       - network
 
-  # Node.js Application
+  # Node.js app
   web-client:
     build:
       context: ./web-client
     environment:
       - VOTE_API_BASE_URL=http://vote-api:8080
     ports:
-      - "3000:3000"
+      - "80:80"
     depends_on:
       - vote-api
     networks:
