@@ -1,11 +1,28 @@
-version: '3.8'
+version: '3.9'
 
 services:
+  # Node.js app
+  web-client:
+    build:
+      context: .
+      dockerfile: ./web-client/Dockerfile
+      target: production
+    environment:
+      - NODE_ENV=production
+      - VOTE_API_BASE_URL=http://vote-api:8080
+    ports:
+      - "3000:3000"
+    depends_on:
+      - vote-api
+    networks:
+      - network
+
   # Vote-API
   vote-api:
-    image: saadajugurtha/vote-api:latest
     build:
-      context: ./vote-api 
+      context: .
+      dockerfile: ./vote-api/Dockerfile
+      target: production
     environment:
       - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
@@ -28,28 +45,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - network
-
-  # Node.js app
-  web-client:
-    image: saadajugurtha/web-client:latest
-    build:
-      context: ./web-client
-    environment:
-      - VOTE_API_BASE_URL=http://vote-api:8080
-      - NODE_ENV=production
-    ports:
-      - "3000:3000"
-    depends_on:
-      - vote-api
-    networks:
-      - network
   
   # docs-app
   docs-app:
-    image: saadajugurtha/docs:latest
     build:
-      context: ./docs 
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./docs/Dockerfile
     ports:
       - "2000:2000"
     networks:

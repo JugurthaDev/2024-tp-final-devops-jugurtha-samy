@@ -82,11 +82,11 @@ func GetMovieByImdbId(imdbId string) (Movie, error) {
 
 	baseUrlString, err := url.JoinPath(TvMazeApiBaseUrl, TvMazeShowsByIdUri)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API1: %w", err)
 	}
 	baseUrl, err := url.Parse(baseUrlString)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API2: %w", err)
 	}
 
 	query := baseUrl.Query()
@@ -96,20 +96,20 @@ func GetMovieByImdbId(imdbId string) (Movie, error) {
 	// Utiliser le client HTTP avec transport personnalisé pour envoyer la requête
 	response, err := client.Get(baseUrl.String())
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API3: %w", err)
 	}
 
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API4: %w", err)
 	}
 
 	movieDto := TvMazeMovieDto{}
 
 	err = json.NewDecoder(response.Body).Decode(&movieDto)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API5: %w", err)
 	}
 
 	return movieDto.toDomain(), nil
