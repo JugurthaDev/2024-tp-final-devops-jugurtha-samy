@@ -1,12 +1,10 @@
 package movies
 
 import (
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
-	"time"
 )
 
 var TvMazeApiBaseUrl = "https://api.tvmaze.com"
@@ -67,49 +65,35 @@ type TvMazeMovieDto struct {
 }
 
 func GetMovieByImdbId(imdbId string) (Movie, error) {
-	// Créer un transport HTTP avec la configuration de sécurité SSL désactivée
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: true, // Ignorer la vérification SSL
-		},
-	}
-
-	// Créer un client HTTP avec ce transport personnalisé
-	client := &http.Client{
-		Transport: tr,
-		Timeout:   10 * time.Second, // Timeout optionnel pour éviter les appels bloqués indéfiniment
-	}
-
 	baseUrlString, err := url.JoinPath(TvMazeApiBaseUrl, TvMazeShowsByIdUri)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API1: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
 	baseUrl, err := url.Parse(baseUrlString)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API2: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
 
 	query := baseUrl.Query()
 	query.Set("imdb", imdbId)
 	baseUrl.RawQuery = query.Encode()
 
-	// Utiliser le client HTTP avec transport personnalisé pour envoyer la requête
-	response, err := client.Get(baseUrl.String())
+	response, err := http.Get(baseUrl.String())
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API3: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
 
 	defer response.Body.Close()
 
 	if response.StatusCode != 200 {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API4: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
 
 	movieDto := TvMazeMovieDto{}
 
 	err = json.NewDecoder(response.Body).Decode(&movieDto)
 	if err != nil {
-		return Movie{}, fmt.Errorf("communication failed with tvmaze API5: %w", err)
+		return Movie{}, fmt.Errorf("communication failed with tvmaze API: %w", err)
 	}
 
 	return movieDto.toDomain(), nil
