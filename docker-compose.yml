@@ -3,6 +3,7 @@ version: '3.8'
 services:
   # Vote-API
   vote-api:
+    image: saadajugurtha/vote-api:latest
     build:
       context: ./vote-api 
     environment:
@@ -30,6 +31,7 @@ services:
 
   # Node.js app
   web-client:
+    image: saadajugurtha/web-client:latest
     build:
       context: ./web-client
     environment:
@@ -44,6 +46,7 @@ services:
   
   # docs-app
   docs-app:
+    image: saadajugurtha/docs:latest
     build:
       context: ./docs 
       dockerfile: Dockerfile
