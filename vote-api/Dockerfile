@@ -20,8 +20,6 @@ FROM debian:buster-slim
 RUN apt-get update && apt-get install -y ca-certificates
 RUN update-ca-certificates
 
-ENV PG_URL=postgres://vote_api:api123@localhost:5432/vote_api?sslmode=disable
-
 WORKDIR /app
 
 COPY --from=builder /app/vote-api ./
