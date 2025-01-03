@@ -1,7 +1,7 @@
 FROM node:23-alpine AS base
 
 WORKDIR /usr/src/app
-COPY ./package.json ./
+COPY ./package.json ./yarn.lock ./
 RUN yarn install
 COPY . ./
 
@@ -19,6 +19,7 @@ COPY --from=builder /usr/src/app/public ./public
 COPY --from=builder /usr/src/app/yarn.lock ./
 COPY --from=builder /usr/src/app/package*.json ./
 RUN yarn install --production
+RUN chown -R node:node /usr/src/app
 USER node
 
 EXPOSE 3000
