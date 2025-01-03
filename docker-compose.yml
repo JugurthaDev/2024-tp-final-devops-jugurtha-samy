@@ -3,6 +3,7 @@ version: '3.9'
 services:
   # Node.js app
   web-client:
+    image: saadajugurtha/web-client:latest
     build:
       context: .
       dockerfile: ./web-client/Dockerfile
@@ -19,6 +20,7 @@ services:
 
   # Vote-API
   vote-api:
+    image: saadajugurtha/vote-api:latest
     build:
       context: .
       dockerfile: ./vote-api/Dockerfile
@@ -48,6 +50,7 @@ services:
   
   # docs-app
   docs-app:
+    image: saadajugurtha/docs:latest
     build:
       context: .
       dockerfile: ./docs/Dockerfile
