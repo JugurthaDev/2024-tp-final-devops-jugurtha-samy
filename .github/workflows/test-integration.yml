@@ -5,6 +5,9 @@ on:
     branches:
       - develop
 
+env:
+  PG_URL: ${{ secrets.PG_URL }}
+
 jobs:
   vote-api-tests:
     name: 🚀 Vote-API Tests
