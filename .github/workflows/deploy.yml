@@ -1,0 +1,42 @@
+name: 🌐 CD Workflow to production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Deploy to Production with Docker Compose
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: ⚙️ Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: 🔑 Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: 🛠️ Install Docker and Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker.io
+          sudo apt-get install -y docker-compose
+
+      - name: 🏗️ Build Docker Compose
+        run: |
+          sudo docker-compose -f ./docker-compose.yml build
+
+      - name: 🚀 Deploy using Docker Compose
+        run: |
+          sudo docker-compose -f ./docker-compose.yml up -d
+
+      - name: ✅ Verify Docker Containers
+        run: |
+          sudo docker ps

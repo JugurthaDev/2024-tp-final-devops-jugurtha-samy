@@ -1,0 +1,66 @@
+name: 🛠️ CI Workflow for Vote-API and Web-Client on develop
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  vote-api-tests:
+    name: 🚀 Vote-API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: 🛠️ Set up Go environment
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.23'
+
+      - name: ✨ Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.63.3
+
+      - name: ✅ Run Unit Tests
+        run: go test ./... -v
+        working-directory: ./vote-api
+
+      - name: ✨ Run Linter
+        run: golangci-lint run --timeout 5m
+        working-directory: ./vote-api
+
+      - name: ✅ Check Formatting
+        run: go fmt ./...
+        working-directory: ./vote-api
+
+  web-client-tests:
+    name: 🌐 Web-Client Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v2
+
+      - name: 📦 Install dependencies
+        run: yarn install
+        working-directory: ./web-client
+
+      - name: 🛠️ Install Playwright dependencies
+        run: yarn playwright install
+        working-directory: ./web-client
+
+      - name: 🛠️ Install Playwright system dependencies
+        run: npx playwright install-deps
+        working-directory: ./web-client
+
+      - name: 🛠️ Run E2E Tests
+        run: yarn e2e
+        working-directory: ./web-client
+
+      - name: ✨ Run Linter
+        run: yarn lint
+        working-directory: ./web-client
+
+      - name: ✅ Check Formatting
+        run: yarn format:check
+        working-directory: ./web-client
