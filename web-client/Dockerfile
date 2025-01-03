@@ -1,9 +1,9 @@
 FROM node:23-alpine AS base
 
 WORKDIR /usr/src/app
-COPY ./web-client/package.json ./
+COPY ./package.json ./
 RUN yarn install
-COPY ./web-client ./
+COPY . ./
 
 FROM base AS development
 EXPOSE 3000
