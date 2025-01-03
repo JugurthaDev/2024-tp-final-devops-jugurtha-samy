@@ -4,33 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      deploy_vote_api:
-        description: 'Deploy Vote API ?'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
-      deploy_web_client:
-        description: 'Deploy Web Client ?'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
-      deploy_docs:
-        description: 'Deploy Docs App ?'
-        required: true
-        default: 'false'
-        type: choice
-        options:
-          - 'true'
-          - 'false'
-
+      
 jobs:
   deploy:
     name: 🚀 Deploy to Production with Docker
@@ -49,32 +23,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
           
-      - name: 🏗️ Build Docker Image for vote-api
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/vote-api:latest ./vote-api
-
-      - name: 🚀 Push Docker Image for vote-api
-        run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/vote-api:latest
-
-      - name: 🏗️ Build Docker Image for web-client
-        run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-client:latest ./web-client
-          
       - name: 🏗️ Build and Deploy Vote API
-        if: ${{ inputs.deploy_vote_api == 'true' }}
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/vote-api:latest ./vote-api
           docker push ${{ secrets.DOCKER_USERNAME }}/vote-api:latest
 
       - name: 🏗️ Build and Deploy Web Client
-        if: ${{ inputs.deploy_web_client == 'true' }}
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/web-client:latest ./web-client
           docker push ${{ secrets.DOCKER_USERNAME }}/web-client:latest
 
       - name: 🏗️ Build and Deploy Docs
-        if: ${{ inputs.deploy_docs == 'true' }}
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/docs:latest ./docs
           docker push ${{ secrets.DOCKER_USERNAME }}/docs:latest
