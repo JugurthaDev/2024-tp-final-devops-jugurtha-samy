@@ -4,10 +4,10 @@ on:
   push:
     branches:
       - main
-
+      
 jobs:
   deploy:
-    name: Deploy to Production with Docker Compose
+    name: 🚀 Deploy to Production with Docker
     runs-on: ubuntu-latest
 
     steps:
@@ -22,27 +22,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: 🛠️ Install Docker and Docker Compose
+          
+      - name: 🏗️ Build and Deploy Vote API
         run: |
-          # Installer Docker
-          curl -fsSL https://get.docker.com -o get-docker.sh
-          sudo sh get-docker.sh
-          # Installer Docker Compose (version 2)
-          sudo curl -L https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-          sudo chmod +x /usr/local/bin/docker-compose
-          # Vérifier l'installation
-          docker --version
-          docker-compose --version
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vote-api:latest ./vote-api
+          docker push ${{ secrets.DOCKER_USERNAME }}/vote-api:latest
 
-      - name: 🏗️ Build Docker Compose
+      - name: 🏗️ Build and Deploy Web Client
         run: |
-          sudo docker-compose -f ./docker-compose.yml build
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-client:latest ./web-client
+          docker push ${{ secrets.DOCKER_USERNAME }}/web-client:latest
 
-      - name: 🚀 Deploy using Docker Compose
+      - name: 🏗️ Build and Deploy Docs
         run: |
-          sudo docker-compose -f ./docker-compose.yml up -d
-
-      - name: ✅ Verify Docker Containers
-        run: |
-          sudo docker ps
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/docs:latest ./docs
+          docker push ${{ secrets.DOCKER_USERNAME }}/docs:latest
