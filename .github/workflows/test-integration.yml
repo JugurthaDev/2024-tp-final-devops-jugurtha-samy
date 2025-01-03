@@ -45,6 +45,14 @@ jobs:
         run: yarn install
         working-directory: ./web-client
 
+      - name: 🛠️ Install Playwright dependencies
+        run: yarn playwright install
+        working-directory: ./web-client
+
+      - name: 🛠️ Install Playwright system dependencies
+        run: npx playwright install-deps
+        working-directory: ./web-client
+
       - name: 🛠️ Run E2E Tests
         run: yarn e2e
         working-directory: ./web-client
