@@ -1,25 +1,29 @@
-FROM golang:1.23.4-alpine AS base
-WORKDIR /usr/src/app
-COPY ./vote-api/go.mod ./vote-api/go.sum ./
+FROM golang:1.23 as builder
+
+ENV GO111MODULE=on \
+    CGO_ENABLED=0 \
+    GOOS=linux \
+    GOARCH=amd64
+
+WORKDIR /app
+
+COPY go.mod go.sum ./
+
 RUN go mod download
-COPY ./vote-api ./
 
-FROM golang:1.23.4-alpine AS builder
-WORKDIR /usr/src/app
-COPY ./vote-api/go.mod ./vote-api/go.sum ./
-RUN go mod download
-COPY ./vote-api ./
-RUN CGO_ENABLED=0 GOOS=linux go build -o vote-api .
+COPY . ./
 
-FROM base AS development
-RUN go install github.com/githubnemo/CompileDaemon@latest
+RUN go build -o vote-api .
+
+FROM debian:buster-slim
+
+RUN apt-get update && apt-get install -y ca-certificates
+RUN update-ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/vote-api ./
+
+ENTRYPOINT ["./vote-api"]
+
 EXPOSE 8080
-CMD ["CompileDaemon", "--build=go build -o main .", "--command=./main"]
-
-FROM alpine:latest AS production
-WORKDIR /usr/src/app
-COPY --chown=nobody:nobody --from=builder /usr/src/app/vote-api ./
-RUN chown -R nobody:nobody /usr/src/app
-USER nobody
-EXPOSE 8080
-CMD ["./vote-api"]
