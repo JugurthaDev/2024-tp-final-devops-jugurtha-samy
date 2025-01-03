@@ -21,8 +21,7 @@ jobs:
       - name: ✨ Install golangci-lint
         run: |
           curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(go env GOPATH)/bin v1.54.2
-        env:
-          GOPATH: ${{ runner.workspace }}/go
+          echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: ✅ Run Unit Tests
         run: go test ./... -v
@@ -43,38 +42,28 @@ jobs:
       - name: 📥 Checkout code
         uses: actions/checkout@v2
 
-      - name: 📦 Install Node.js 23
-        run: |
-          curl -sL https://deb.nodesource.com/setup_23.x | sudo -E bash -
-          sudo apt-get install -y nodejs
-
-      - name: 📦 Verify Node.js version
-        run: node --version
-
-      - name: 📦 Cache Yarn dependencies for Web-Client
-        uses: actions/cache@v2
+      - name: 📦 Set up Node.js for Web-Client
+        uses: actions/setup-node@v3
         with:
-          path: ~/.cache/yarn
-          key: ${{ runner.os }}-yarn-${{ hashFiles('web-client/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          node-version: 18
+          cache: 'yarn'
 
-      - name: 📦 Install dependencies for Web-Client
-        run: yarn
+      - name: 📦 Install dependencies
+        run: yarn install
         working-directory: ./web-client
 
-      - name: ✅ Run Unit Tests for Web-Client
+      - name: ✅ Run Unit Tests
         run: yarn test
         working-directory: ./web-client
 
-      - name: 🌐 Run E2E Tests for Web-Client
+      - name: 🛠️ Run E2E Tests
         run: yarn e2e
         working-directory: ./web-client
 
-      - name: ✨ Run Linter for Web-Client
+      - name: ✨ Run Linter
         run: yarn lint
         working-directory: ./web-client
 
-      - name: ✅ Check Formatting for Web-Client
+      - name: ✅ Check Formatting
         run: yarn format:check
         working-directory: ./web-client
