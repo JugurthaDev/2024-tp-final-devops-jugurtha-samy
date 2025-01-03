@@ -34,6 +34,7 @@ services:
       context: ./web-client
     environment:
       - VOTE_API_BASE_URL=http://vote-api:8080
+      - NODE_ENV=production
     ports:
       - "3000:3000"
     depends_on:

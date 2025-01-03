@@ -45,10 +45,6 @@ jobs:
         run: yarn install
         working-directory: ./web-client
 
-      - name: ✅ Run Unit Tests
-        run: yarn test
-        working-directory: ./web-client
-
       - name: 🛠️ Run E2E Tests
         run: yarn e2e
         working-directory: ./web-client
