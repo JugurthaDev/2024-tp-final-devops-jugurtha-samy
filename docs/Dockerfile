@@ -1,8 +1,8 @@
 FROM node:latest AS build
 WORKDIR /usr/src/app
-COPY package*.json ./
+COPY ./docs/package.json ./
 RUN npm install
-COPY . .
+COPY ./docs ./
 RUN npm run build
 
 # Deployment step
