@@ -5,8 +5,7 @@ services:
   web-client:
     image: saadajugurtha/web-client:latest
     build:
-      context: .
-      dockerfile: ./web-client/Dockerfile
+      context: ./web-client/
       target: production
     environment:
       - NODE_ENV=production
@@ -22,8 +21,7 @@ services:
   vote-api:
     image: saadajugurtha/vote-api:latest
     build:
-      context: .
-      dockerfile: ./vote-api/Dockerfile
+      context: ./vote-api/
     environment:
       - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
@@ -46,13 +44,12 @@ services:
       - postgres-data:/var/lib/postgresql/data
     networks:
       - network
-  
+
   # docs-app
   docs-app:
     image: saadajugurtha/docs:latest
     build:
-      context: .
-      dockerfile: ./docs/Dockerfile
+      context: ./docs/
     ports:
       - "2000:2000"
     networks:
