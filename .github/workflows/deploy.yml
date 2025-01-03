@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Production with Docker Compose
+    name: 🚀 Deploy to Production with Docker
     runs-on: ubuntu-latest
 
     steps:
@@ -23,14 +23,47 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: 🏗️ Build Docker Compose
+      - name: 🏗️ Build Docker Image for vote-api
         run: |
-          sudo docker-compose -f ./docker-compose.yml build
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/vote-api:latest ./vote-api
 
-      - name: 🚀 Deploy using Docker Compose
+      - name: 🚀 Push Docker Image for vote-api
         run: |
-          sudo docker-compose -f ./docker-compose.yml up -d
+          docker push ${{ secrets.DOCKER_USERNAME }}/vote-api:latest
+
+      - name: 🏗️ Build Docker Image for web-client
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/web-client:latest ./web-client
+
+      - name: 🚀 Push Docker Image for web-client
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/web-client:latest
+
+      - name: 🏗️ Build Docker Image for docs
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/docs:latest ./docs
+
+      - name: 🚀 Push Docker Image for docs
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/docs:latest
+
+      - name: 🔐 Add SSH private key to ssh-agent
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.AZURE_SSH_PRIVATE_KEY }}
+
+      - name: 🔄 SSH to Azure and Pull Latest Images
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.AZURE_SERVER_HOST }}
+          username: ${{ secrets.AZURE_SERVER_USER }}
+          port: 22
+          script: |
+            docker pull ${{ secrets.DOCKER_USERNAME }}/vote-api:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/web-client:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/docs:latest
+            docker-compose -f docker-compose.yml up -d
 
       - name: ✅ Verify Docker Containers
         run: |
-          sudo docker ps
+          docker ps

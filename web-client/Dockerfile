@@ -4,6 +4,7 @@ COPY package.json yarn.lock ./
 RUN yarn install
 COPY . .
 ENV VOTE_API_BASE_URL=http://localhost:8080
+ENV NODE_ENV=production
 RUN yarn build
-EXPOSE 80
+EXPOSE 3000
 CMD ["yarn", "start"]
