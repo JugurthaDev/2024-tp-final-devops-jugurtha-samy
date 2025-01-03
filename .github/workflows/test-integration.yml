@@ -5,9 +5,6 @@ on:
     branches:
       - develop
 
-env:
-  PG_URL: ${{ secrets.PG_URL }}
-
 jobs:
   vote-api-tests:
     name: 🚀 Vote-API Tests
@@ -31,6 +28,9 @@ jobs:
 
       - name: 🐳 Build Vote-API Image
         run: docker build -t vote-api ./vote-api
+
+      - name: 🔍 Debug PG_URL
+        run: echo "PG_URL=${{ secrets.PG_URL }}"
 
       - name: ✅ Run Integration Tests for Vote-API
         run: |
