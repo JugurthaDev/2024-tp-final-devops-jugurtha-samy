@@ -24,7 +24,6 @@ services:
     build:
       context: .
       dockerfile: ./vote-api/Dockerfile
-      target: production
     environment:
       - PG_URL=postgres://vote_api:api123@postgres:5432/vote_api?sslmode=disable
     ports:
